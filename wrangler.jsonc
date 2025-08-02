@@ -21,14 +21,14 @@
     {
       "binding": "DB",
       "database_name": "community-db",
-      "database_id": "3533d88d-593b-4137-ae4a-e19a28970dbd",
+      "database_id": "d3233559-622e-4078-a9df-c14c7fa68584",
       "migrations_dir": "worker/migrations"
     }
   ],
   "kv_namespaces": [
     {
       "binding": "KV_SESSIONS",
-      "id": "5238ba5971a947afa77850d7c75bfc24"
+      "id": "30d013680e7e45e4821dd248798b67ba"
     }
   ],
 
