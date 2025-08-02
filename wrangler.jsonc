@@ -31,12 +31,7 @@
       "id": "5238ba5971a947afa77850d7c75bfc24"
     }
   ],
-  "r2_buckets": [
-    {
-      "binding": "R2_BUCKET",
-      "bucket_name": "community-assets"
-    }
-  ],
+
   "dev": {
     "port": 8787
   }
