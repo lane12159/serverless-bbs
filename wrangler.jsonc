@@ -6,7 +6,7 @@
     "nodejs_compat"
   ],
   "vars": {
-    "RP_NAME": "Community Board",
+    "RP_NAME": "论坛 BBS",
     "RP_SUBTITLE": "An opensource-friendly forum",
     "R2_PUBLIC_URL": "/r2",
     "REGISTER_ENABLED": true
