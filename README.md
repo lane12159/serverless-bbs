@@ -31,7 +31,7 @@ yarn dev
 
 ### 线上部署
 
-[![Deploy with Cloudflare Workers](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https%3A%2F%2Fgithub.com%2Fserverless-bbs%2Fserverless-bbs)
+[![Deploy with Cloudflare Workers](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https%3A%2F%2Fgithub.com%2Flane12159%2Fserverless-bbs)
 
 
 ## 截图
