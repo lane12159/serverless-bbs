@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { startRegistration, startAuthentication } from '@simplewebauthn/browser';
 import { apiClient } from '@/lib/api';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from "@/components/ui/use-toast";
@@ -13,8 +12,7 @@ export default function AuthPage() {
   const { login } = useAuth();
   const { toast } = useToast();
   const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [passwprd, setPassword] = useState('');
+  const [password, setPassword] = useState('');
   const [isRegistering, setIsRegistering] = useState(false);
   const [isSigning, setIsSigning] = useState(false);
 
@@ -26,7 +24,7 @@ export default function AuthPage() {
       const regOptions = await apiClient.post('/auth/register/challenge', { username, email }) as any;
 
       // 2. 使用浏览器 API 创建凭证
-      const attestation = await startRegistration(regOptions);
+      const attestation = password;
 
       // 3. 将结果发送到后端进行验证
       const verificationResponse = await apiClient.post<{ verified: boolean, token: string }>(
@@ -54,10 +52,10 @@ export default function AuthPage() {
     try {
       setIsSigning(true);
       // 1. 从后端获取认证选项
-      const authOptions = await apiClient.post('/auth/login/challenge', {}) as any;
+      const authOptions = await apiClient.post('/auth/login/challenge', {username, email}) as any;
 
       // 2. 使用浏览器 API 获取断言
-      const assertion = await startAuthentication(authOptions);
+      const assertion = password;
 
       // 3. 将结果发送到后端进行验证
       const verificationResponse = await apiClient.post<{ verified: boolean, token: string }>(
@@ -94,20 +92,14 @@ export default function AuthPage() {
             <Button onClick={handleRegister} variant="outline" className='w-[84px] h-[23px] text-xs border-[#999] rounded-none' style={{background: 'linear-gradient(0, #e2e2e2, #fcfdfd)'}} disabled={!username || !email || isRegistering}>
               {isRegistering ? '注册中...' : '&nbsp;注册&nbsp;'}
             </Button>
-            <!--div className="flex">
-              <Input type="checkbox" id="ls_cookietime" className='w-[14px] h-[14px]'></Input>
-              <Label htmlFor="ls_cookietime" className='inline-block font-normal text-xs ml-1'>自动登录</Label>
-            </div-->
           </td>
         </tr>
         <tr>
           <td className='text-center text-gray-400 border-r border-r-[#ccc] pr-4'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
           <td>
-            <！--Label className='font-normal text-xs pl-4' htmlFor="email">E-mail</Label-->
             <Label className='font-normal text-xs pl-4' htmlFor="password">密码</Label>
           </td>
           <td>
-            <--Input className='h-[23px] w-[140px] text-[13px] px-[5px] focus:border-[#000] border-t-[#848484] border-r-[#E0E0E0] border-b-[#E0E0E0] border-l-[#848484]' style={{ boxShadow: 'inset 0 1px 1px #848484' }}  id="email" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="输入您的邮箱" /-->
             <Input className='h-[23px] w-[140px] text-[13px] px-[5px] focus:border-[#000] border-t-[#848484] border-r-[#E0E0E0] border-b-[#E0E0E0] border-l-[#848484]' style={{ boxShadow: 'inset 0 1px 1px #848484' }}  id="password" type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="输入您的密码" />
           </td>
           <td>
