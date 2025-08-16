@@ -90,7 +90,7 @@ export default function AuthPage() {
           <td><Input className='h-[23px] w-[140px] text-[13px] px-[5px] focus:border-[#000] border-t-[#848484] border-r-[#E0E0E0] border-b-[#E0E0E0] border-l-[#848484]' style={{ boxShadow: 'inset 0 1px 1px #848484' }} id="username" value={username} onChange={e => setUsername(e.target.value)} placeholder="输入您的用户名" /></td>
           <td>
             <Button onClick={handleRegister} variant="outline" className='w-[84px] h-[23px] text-xs border-[#999] rounded-none' style={{background: 'linear-gradient(0, #e2e2e2, #fcfdfd)'}} disabled={!username || !password || isRegistering}>
-              {isRegistering ? '注册中...' : '&nbsp;注册&nbsp;'}
+              {isRegistering ? '注册中...' : '注册'}
             </Button>
           </td>
         </tr>
@@ -104,7 +104,7 @@ export default function AuthPage() {
           </td>
           <td>
             <Button onClick={handleLogin} variant="default" className='rounded-[3px] px-2 h-[24px] text-xs'>
-              {isSigning ? '登录中...' : '&nbsp;登录&nbsp;'}
+              {isSigning ? '登录中...' : '登录'}
             </Button>
           </td>
         </tr>
