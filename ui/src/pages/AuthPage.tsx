@@ -14,6 +14,7 @@ export default function AuthPage() {
   const { toast } = useToast();
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
+  const [passwprd, setPassword] = useState('');
   const [isRegistering, setIsRegistering] = useState(false);
   const [isSigning, setIsSigning] = useState(false);
 
@@ -86,26 +87,32 @@ export default function AuthPage() {
       <tbody>
         <tr>
           <td className='border-r border-r-[#ccc] pr-4 text-center'>
-            <Button onClick={handleLogin} variant="default" className='rounded-[3px] px-2 h-[24px] text-xs'>
-              {isSigning ? '登录中...' : 'Passkey 登录'}
-            </Button>
           </td>
           <td><Label className='font-normal text-xs pl-4' htmlFor="username">用户名</Label></td>
           <td><Input className='h-[23px] w-[140px] text-[13px] px-[5px] focus:border-[#000] border-t-[#848484] border-r-[#E0E0E0] border-b-[#E0E0E0] border-l-[#848484]' style={{ boxShadow: 'inset 0 1px 1px #848484' }} id="username" value={username} onChange={e => setUsername(e.target.value)} placeholder="输入您的用户名" /></td>
           <td>
-            <div className="flex">
+            <Button onClick={handleRegister} variant="outline" className='w-[84px] h-[23px] text-xs border-[#999] rounded-none' style={{background: 'linear-gradient(0, #e2e2e2, #fcfdfd)'}} disabled={!username || !email || isRegistering}>
+              {isRegistering ? '注册中...' : '&nbsp;注册&nbsp;'}
+            </Button>
+            <!--div className="flex">
               <Input type="checkbox" id="ls_cookietime" className='w-[14px] h-[14px]'></Input>
               <Label htmlFor="ls_cookietime" className='inline-block font-normal text-xs ml-1'>自动登录</Label>
-            </div>
+            </div-->
           </td>
         </tr>
         <tr>
-          <td className='text-center text-gray-400 border-r border-r-[#ccc] pr-4'>只需一步，快速开始</td>
-          <td><Label className='font-normal text-xs pl-4' htmlFor="email">E-mail</Label></td>
-          <td><Input className='h-[23px] w-[140px] text-[13px] px-[5px] focus:border-[#000] border-t-[#848484] border-r-[#E0E0E0] border-b-[#E0E0E0] border-l-[#848484]' style={{ boxShadow: 'inset 0 1px 1px #848484' }}  id="email" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="输入您的邮箱" /></td>
+          <td className='text-center text-gray-400 border-r border-r-[#ccc] pr-4'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
           <td>
-            <Button onClick={handleRegister} variant="outline" className='w-[84px] h-[23px] text-xs border-[#999] rounded-none' style={{background: 'linear-gradient(0, #e2e2e2, #fcfdfd)'}} disabled={!username || !email || isRegistering}>
-              {isRegistering ? '注册中...' : 'Passkey 注册'}
+            <！--Label className='font-normal text-xs pl-4' htmlFor="email">E-mail</Label-->
+            <Label className='font-normal text-xs pl-4' htmlFor="password">密码</Label>
+          </td>
+          <td>
+            <--Input className='h-[23px] w-[140px] text-[13px] px-[5px] focus:border-[#000] border-t-[#848484] border-r-[#E0E0E0] border-b-[#E0E0E0] border-l-[#848484]' style={{ boxShadow: 'inset 0 1px 1px #848484' }}  id="email" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="输入您的邮箱" /-->
+            <Input className='h-[23px] w-[140px] text-[13px] px-[5px] focus:border-[#000] border-t-[#848484] border-r-[#E0E0E0] border-b-[#E0E0E0] border-l-[#848484]' style={{ boxShadow: 'inset 0 1px 1px #848484' }}  id="password" type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="输入您的密码" />
+          </td>
+          <td>
+            <Button onClick={handleLogin} variant="default" className='rounded-[3px] px-2 h-[24px] text-xs'>
+              {isSigning ? '登录中...' : '&nbsp;登录&nbsp;'}
             </Button>
           </td>
         </tr>
