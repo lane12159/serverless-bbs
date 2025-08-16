@@ -40,7 +40,7 @@ app.post('/register/simple', zValidator('json', registerChallengeSchema), async 
      verified: true, 
      rpName: RP_NAME,
      rpID,
-     userID: new TextEncoder().encode(user.id), // FIX: userID must be a BufferSource
+     userID: user.id, // FIX: userID must be a BufferSource
      userName: user.username,
      token: sessionToken 
     });
@@ -64,7 +64,7 @@ app.post('/login/simple', zValidator('json', registerChallengeSchema), async (c)
     verified: true,
     rpName: RP_NAME,
     rpID,
-    userID: new TextEncoder().encode(user.id), // FIX: userID must be a BufferSource
+    userID: user.id, // FIX: userID must be a BufferSource
     userName: user.username,
      token: sessionToken
      });
