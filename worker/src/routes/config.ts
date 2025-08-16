@@ -9,6 +9,7 @@ app.get('/', (c) => {
     return c.json({
         rpName: c.env.RP_NAME,
         rpSubtitle: c.env.RP_SUBTITLE,
+        rpHotSearch: c.env.RP_HOT,
     });
 });
 
