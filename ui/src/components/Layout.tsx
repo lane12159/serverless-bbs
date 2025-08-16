@@ -143,7 +143,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <div className='text-xs inline-flex items-center' style={{ width: '1000px' }}>
             <b>热搜:</b>
             <span className="text-[#369]">
-            {rpName}
+            {rpHotSearch}
             </span>
           </div>
 
