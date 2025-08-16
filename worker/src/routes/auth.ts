@@ -27,13 +27,13 @@ app.post('/register/challenge', zValidator('json', registerChallengeSchema), asy
   if (!c.env.REGISTER_ENABLED) {
     return c.json({ error: `Registration is disabled` }, 400);
   }
-  const { username, email } = c.req.valid('json');
+  const { username, password } = c.req.valid('json');
   const { RP_NAME } = c.env;
-  const exists = await getUser(c.env.DB, username, email);
+  const exists = await getUser(c.env.DB, username, password);
   if (exists) {
     return c.json({ error: `User exists` }, 400);
   }
-  const user = await getOrCreateUser(c.env.DB, username, email);
+  const user = await getOrCreateUser(c.env.DB, username, password);
   const userPasskeys = await getUserPasskeys(c.env.DB, user.id);
   const url = new URL(c.req.url);
 
