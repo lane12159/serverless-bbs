@@ -143,19 +143,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <div className='text-xs inline-flex items-center' style={{ width: '1000px' }}>
             <b>热搜:</b>
             <span className="text-[#369]">
-              香港vps
-              香港VPS
-              amh
-              机柜
-              vps
-              分销
-              VPS
-              域名出售
-              火车头
-              云主机
-              不限流量
-              香港服务器
-              美国服务器
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             </span>
           </div>
 
