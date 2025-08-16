@@ -4,12 +4,13 @@ import { apiClient } from '@/lib/api';
 interface AppConfig {
   rpName: string;
   rpSubtitle: string;
+  rpHotSearch: string;
 }
 
 const ConfigContext = createContext<AppConfig | null>(null);
 
 export const ConfigProvider = ({ children }: { children: ReactNode }) => {
-  const [config, setConfig] = useState<AppConfig>({ rpName: 'Loading...', rpSubtitle: 'Loading...' });
+  const [config, setConfig] = useState<AppConfig>({ rpName: 'Loading...', rpSubtitle: 'Loading...' , rpHotSearch: 'Loading...' });
 
   useEffect(() => {
     const fetchConfig = async () => {
@@ -19,7 +20,7 @@ export const ConfigProvider = ({ children }: { children: ReactNode }) => {
       } catch (error) {
         console.error("Failed to fetch app config:", error);
         // 如果获取失败，提供一个默认标题
-        setConfig({ rpName: 'Community Board', rpSubtitle: 'An opensource-friendly forum' });
+        setConfig({ rpName: 'Community Board', rpSubtitle: 'An opensource-friendly forum' , rpHotSearch: '' });
       }
     };
     fetchConfig();
