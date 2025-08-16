@@ -21,7 +21,7 @@ export default function AuthPage() {
     setIsRegistering(true);
     try {
       // 1. 从后端获取注册选项 (challenge)
-      const regOptions = await apiClient.post('/auth/register/challenge', { username, email }) as any;
+      const regOptions = await apiClient.post('/auth/register/challenge', { username, password }) as any;
 
       // 2. 使用浏览器 API 创建凭证
       const attestation = password;
@@ -52,7 +52,7 @@ export default function AuthPage() {
     try {
       setIsSigning(true);
       // 1. 从后端获取认证选项
-      const authOptions = await apiClient.post('/auth/login/challenge', {username, email}) as any;
+      const authOptions = await apiClient.post('/auth/login/challenge', {username, password}) as any;
 
       // 2. 使用浏览器 API 获取断言
       const assertion = password;
@@ -89,7 +89,7 @@ export default function AuthPage() {
           <td><Label className='font-normal text-xs pl-4' htmlFor="username">用户名</Label></td>
           <td><Input className='h-[23px] w-[140px] text-[13px] px-[5px] focus:border-[#000] border-t-[#848484] border-r-[#E0E0E0] border-b-[#E0E0E0] border-l-[#848484]' style={{ boxShadow: 'inset 0 1px 1px #848484' }} id="username" value={username} onChange={e => setUsername(e.target.value)} placeholder="输入您的用户名" /></td>
           <td>
-            <Button onClick={handleRegister} variant="outline" className='w-[84px] h-[23px] text-xs border-[#999] rounded-none' style={{background: 'linear-gradient(0, #e2e2e2, #fcfdfd)'}} disabled={!username || !email || isRegistering}>
+            <Button onClick={handleRegister} variant="outline" className='w-[84px] h-[23px] text-xs border-[#999] rounded-none' style={{background: 'linear-gradient(0, #e2e2e2, #fcfdfd)'}} disabled={!username || !password || isRegistering}>
               {isRegistering ? '注册中...' : '&nbsp;注册&nbsp;'}
             </Button>
           </td>
