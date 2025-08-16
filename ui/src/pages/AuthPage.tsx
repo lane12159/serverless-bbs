@@ -21,20 +21,12 @@ export default function AuthPage() {
     setIsRegistering(true);
     try {
       // 1. 从后端获取注册选项 (challenge)
-      const regOptions = await apiClient.post('/auth/register/challenge', { username, password }) as any;
+      const regOptions = await apiClient.post('/auth/register/smple', { username, password }) as any;
 
       // 2. 使用浏览器 API 创建凭证
-      const attestation = password;
-
-      // 3. 将结果发送到后端进行验证
-      const verificationResponse = await apiClient.post<{ verified: boolean, token: string }>(
-        '/auth/register/verify',
-        { userId: regOptions.user.id, response: attestation }
-      );
-
-      if (verificationResponse.verified && verificationResponse.token) {
+      if (regOptions.verified && regOptions.token) {
         toast({ title: "注册成功", description: "您已成功注册并登录。" });
-        login(verificationResponse.token);
+        login(regOptions.token);
         navigate('/');
       } else {
         throw new Error('Passkey verification failed.');
@@ -52,21 +44,12 @@ export default function AuthPage() {
     try {
       setIsSigning(true);
       // 1. 从后端获取认证选项
-      const authOptions = await apiClient.post('/auth/login/challenge', {username, password}) as any;
+      const authOptions = await apiClient.post('/auth/login/smple', {username, password}) as any;
 
-      // 2. 使用浏览器 API 获取断言
-      const assertion = password;
-
-      // 3. 将结果发送到后端进行验证
-      const verificationResponse = await apiClient.post<{ verified: boolean, token: string }>(
-        '/auth/login/verify',
-        assertion
-      );
-
-      if (verificationResponse.verified && verificationResponse.token) {
+      if (authOptions.verified && authOptions.token) {
         setIsSigning(false);
         toast({ title: "登录成功", description: "欢迎回来！" });
-        login(verificationResponse.token);
+        login(authOptions.token);
         navigate('/');
       } else {
         setIsSigning(false);
