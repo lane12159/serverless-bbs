@@ -103,7 +103,7 @@ export default function AuthPage() {
             <Input className='h-[23px] w-[140px] text-[13px] px-[5px] focus:border-[#000] border-t-[#848484] border-r-[#E0E0E0] border-b-[#E0E0E0] border-l-[#848484]' style={{ boxShadow: 'inset 0 1px 1px #848484' }}  id="password" type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="输入您的密码" />
           </td>
           <td>
-            <Button onClick={handleLogin} variant="default" className='rounded-[3px] px-2 h-[24px] text-xs'>
+            <Button onClick={handleLogin} variant="default" className='rounded-[3px] px-2 w-[86px] h-[24px] text-xs' disabled={!username || !password || isRegistering}>
               {isSigning ? '登录中...' : '登录'}
             </Button>
           </td>
