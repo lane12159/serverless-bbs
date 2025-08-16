@@ -23,7 +23,7 @@ const registerChallengeSchema = z.object({
   password: z.string().min(3).max(50),
 });
 
-app.post('/register/challenge', zValidator('json', registerChallengeSchema), async (c) => {
+app.post('/register/simple', zValidator('json', registerChallengeSchema), async (c) => {
   if (!c.env.REGISTER_ENABLED) {
     return c.json({ error: `Registration is disabled` }, 400);
   }
@@ -39,99 +39,18 @@ app.post('/register/challenge', zValidator('json', registerChallengeSchema), asy
 
   // If have env var RP_ID, read it, or use url.hostname
   const rpID = 'undefined' != typeof c.env.RP_ID && c.env.RP_ID ? c.env.RP_ID : url.hostname;
-  const options = await generateRegistrationOptions({
-    rpName: RP_NAME,
-    rpID,
-    userID: new TextEncoder().encode(user.id), // FIX: userID must be a BufferSource
-    userName: user.username,
-    // Prevent users from re-registering the same authenticator
-    excludeCredentials: userPasskeys.map(pk => ({
-      id: pk.id,
-      type: 'public-key',
-    })),
-    authenticatorSelection: {
-      residentKey: 'required',
-      userVerification: 'preferred',
-    }
-  });
 
-  // Store the challenge against the user's original string ID
-  await c.env.KV_SESSIONS.put(`challenge:${options.challenge}`, user.id, { expirationTtl: 300 });
-
-  return c.json(options);
-});
-
-
-app.post('/register/verify', async (c) => {
-  // The user's ID is no longer sent from the client
-  const { response } = await c.req.json<{ response: RegistrationResponseJSON }>();
-  const url = new URL(c.req.url);
-
-  if (!response) {
-    return c.json({ error: 'Invalid request body' }, 400);
-  }
-
-  // The challenge is now used to look up the user ID
-  // Extract challenge from clientDataJSON
-  const clientDataJSON = response.response.clientDataJSON;
-  const clientData = JSON.parse(
-    new TextDecoder().decode(
-      typeof clientDataJSON === 'string'
-        ? Uint8Array.from(atob(clientDataJSON.replace(/-/g, '+').replace(/_/g, '/')), c => c.charCodeAt(0))
-        : new Uint8Array(clientDataJSON)
-    )
-  );
-  const expectedChallenge = clientData.challenge;
-  const userId = await c.env.KV_SESSIONS.get(`challenge:${expectedChallenge}`);
-
-  if (!userId) {
-    return c.json({ error: 'Challenge expired or not found. Please try again.' }, 400);
-  }
-
-  const expectedRPID = 'undefined' != typeof c.env.RP_ID && c.env.RP_ID ? c.env.RP_ID : url.hostname;
-  const expectedOrigin = 'undefined' != typeof c.env.ORIGIN && c.env.ORIGIN ? c.env.ORIGIN : url.origin;
-
-  let verification;
-  try {
-    verification = await verifyRegistrationResponse({
-      response,
-      expectedChallenge,
-      expectedOrigin,
-      expectedRPID,
-      requireUserVerification: false,
+  // Create a session for the user
+  const sessionToken = crypto.randomUUID();
+  await c.env.KV_SESSIONS.put(`session:${sessionToken}`, user.id, { expirationTtl: 86400 });
+  return c.json({
+     verified: true, 
+     rpName: RP_NAME,
+     rpID,
+     userID: new TextEncoder().encode(user.id), // FIX: userID must be a BufferSource
+     userName: user.username,
+     token: sessionToken 
     });
-  } catch (error) {
-    console.error(error);
-    return c.json({ error: (error as Error).message }, 400);
-  }
-
-  const { verified, registrationInfo } = verification;
-
-  if (verified && registrationInfo) {
-    const { credentialPublicKey, credentialID, counter } = registrationInfo;
-
-    const newPasskey: Omit<Passkey, 'user_id' | 'created_at'> = {
-      id: credentialID,
-      pubkey_blob: <any>credentialPublicKey,
-      sign_counter: counter,
-    };
-
-    // Store the new Passkey in D1, linked to the retrieved userId
-    await c.env.DB.prepare(
-      'INSERT INTO Passkeys (id, user_id, pubkey_blob, sign_counter, created_at) VALUES (?, ?, ?, ?, ?)'
-    ).bind(newPasskey.id, userId, newPasskey.pubkey_blob, newPasskey.sign_counter, Math.floor(Date.now() / 1000)).run();
-
-    // Clean up the challenge from KV
-    await c.env.KV_SESSIONS.delete(`challenge:${expectedChallenge}`);
-
-    // Create a session for the user
-    const sessionToken = crypto.randomUUID();
-    await c.env.KV_SESSIONS.put(`session:${sessionToken}`, userId, { expirationTtl: 86400 });
-
-    return c.json({ verified: true, token: sessionToken });
-  }
-
-  return c.json({ verified: false }, 400);
 });
 
 const loginChallengeSchema = z.object({});
