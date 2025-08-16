@@ -17,7 +17,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [searchType, setSearchType] = useState('threads');
-  const { rpName, rpSubtitle } = useConfig(); // 2. 从 context 获取论坛名称
+  const { rpName, rpSubtitle, rpHotSearch } = useConfig(); // 2. 从 context 获取论坛名称
 
   const handleSearch = () => {
     if (!searchTerm.trim()) return;
