@@ -21,7 +21,7 @@ export default function AuthPage() {
     setIsRegistering(true);
     try {
       // 1. 从后端获取注册选项 (challenge)
-      const regOptions = await apiClient.post('/auth/register/smple', { username, password }) as any;
+      const regOptions = await apiClient.post('/auth/register/simple', { username, password }) as any;
 
       // 2. 使用浏览器 API 创建凭证
       if (regOptions.verified && regOptions.token) {
@@ -44,7 +44,7 @@ export default function AuthPage() {
     try {
       setIsSigning(true);
       // 1. 从后端获取认证选项
-      const authOptions = await apiClient.post('/auth/login/smple', {username, password}) as any;
+      const authOptions = await apiClient.post('/auth/login/simple', {username, password}) as any;
 
       if (authOptions.verified && authOptions.token) {
         setIsSigning(false);
