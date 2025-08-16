@@ -20,7 +20,7 @@ const app = new Hono<{ Bindings: AuthBindings }>();
 // Schema for the registration challenge request
 const registerChallengeSchema = z.object({
   username: z.string().min(3).max(50),
-  email: z.string().email(),
+  password: z.string().min(3).max(50),
 });
 
 app.post('/register/challenge', zValidator('json', registerChallengeSchema), async (c) => {
