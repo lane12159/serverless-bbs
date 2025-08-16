@@ -55,8 +55,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <div className="max-w-[960px] mx-auto flex justify-between items-center">
           <Link to="/" className="flex-shrink-0">
             <h1 className="text-3xl font-bold text-[#336699] tracking-tighter">{rpName}</h1>
-            <p className="text-xs text-gray-400">{rpSubtitle}</p>
           </Link>
+          <p className="text-xs text-gray-400">{rpSubtitle}</p>
           {isAuthenticated && user ? (
             <table className='text-right space-y-3'>
               <tbody>
@@ -143,7 +143,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <div className='text-xs inline-flex items-center' style={{ width: '1000px' }}>
             <b>热搜:</b>
             <span className="text-[#369]">
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            {rpName}
             </span>
           </div>
 
@@ -159,10 +159,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
       <footer className="w-full mt-8">
         <div className="max-w-[960px] mx-auto py-4 px-4 text-center text-xs text-[#666] border-t border-[#CDCDCD]">
-          <p>Powered by <a href="https://github.com/serverless-bbs/serverless-bbs" className='font-bold hover:underline hover:text-[#336699]' target="_blank">ServerlessDiscuz!</a></p>
           <p className="mt-1 text-[12px]">
-            <span className='inline-block' style={{ transform: 'rotate(180deg)' }}>©</span>
-            2004-2025 Inspired by <a href='//www.comsenz.com' target='_blank'>Comsenz</a> | Hosted on <a href='//www.cloudflare.com' target='_blank'>Cloudflare</a> | Accelerate by <a href='//edgeone.ai' target='_blank'>Edgeone</a>.
+            <span className='inline-block' style={{ transform: 'rotate(180deg)' }}>©</span> CopyLeft
           </p>
         </div>
       </footer>
