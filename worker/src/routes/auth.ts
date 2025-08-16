@@ -1,16 +1,10 @@
 import { Hono } from 'hono';
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
-import {
-  generateRegistrationOptions,
-  verifyRegistrationResponse,
-  generateAuthenticationOptions,
-  verifyAuthenticationResponse,
-} from '@simplewebauthn/server';
 import type { RegistrationResponseJSON, AuthenticationResponseJSON } from '@simplewebauthn/types';
 
 import type { Bindings, Passkey } from '../types';
-import { getOrCreateUser, getUser, getUserPasskeys, getPasskeyById } from '../lib/passkeys';
+import { getOrCreateUser, getUser, getUserVerify} from '../lib/passkeys';
 
 // Extend the Hono Bindings type to include the variables from wrangler.toml
 type AuthBindings = Bindings;
@@ -34,7 +28,6 @@ app.post('/register/simple', zValidator('json', registerChallengeSchema), async 
     return c.json({ error: `User exists` }, 400);
   }
   const user = await getOrCreateUser(c.env.DB, username, password);
-  const userPasskeys = await getUserPasskeys(c.env.DB, user.id);
   const url = new URL(c.req.url);
 
   // If have env var RP_ID, read it, or use url.hostname
@@ -53,89 +46,29 @@ app.post('/register/simple', zValidator('json', registerChallengeSchema), async 
     });
 });
 
-const loginChallengeSchema = z.object({});
-app.post('/login/challenge', zValidator('json', loginChallengeSchema), async (c) => {
+app.post('/login/simple', zValidator('json', registerChallengeSchema), async (c) => {
+  const { username, password } = c.req.valid('json');
+  const { RP_NAME } = c.env;
+  const user = await getUserVerify(c.env.DB, username, password);
+  if (!user) {
+    return c.json({ error: `User not exists` }, 400);
+  }
+
   const url = new URL(c.req.url);
+  // If have env var RP_ID, read it, or use url.hostname
   const rpID = 'undefined' != typeof c.env.RP_ID && c.env.RP_ID ? c.env.RP_ID : url.hostname;
-  const options = await generateAuthenticationOptions({
-    rpID: rpID,
-    userVerification: 'preferred',
-  });
+  // Create a new session
+  const sessionToken = crypto.randomUUID();
+  await c.env.KV_SESSIONS.put(`session:${sessionToken}`, user.id, { expirationTtl: 86400 }); // 1 day
+  return c.json({ 
+    verified: true,
+    rpName: RP_NAME,
+    rpID,
+    userID: new TextEncoder().encode(user.id), // FIX: userID must be a BufferSource
+    userName: user.username,
+     token: sessionToken
+     });
 
-  // Store the challenge so we can verify it on the next step
-  await c.env.KV_SESSIONS.put(`challenge:${options.challenge}`, "true", { expirationTtl: 300 });
-
-  return c.json(options);
-});
-
-
-app.post('/login/verify', async (c) => {
-  const response = await c.req.json<AuthenticationResponseJSON>();
-  const url = new URL(c.req.url);
-
-  if (!response) {
-    return c.json({ error: 'Invalid request body' }, 400);
-  }
-
-  // Extract challenge from clientDataJSON
-  const clientDataJSON = response.response.clientDataJSON;
-  const clientData = JSON.parse(
-    new TextDecoder().decode(
-      typeof clientDataJSON === 'string'
-        ? Uint8Array.from(atob(clientDataJSON.replace(/-/g, '+').replace(/_/g, '/')), c => c.charCodeAt(0))
-        : new Uint8Array(clientDataJSON)
-    )
-  );
-  const challenge = clientData.challenge;
-
-  const expectedChallenge = await c.env.KV_SESSIONS.get(`challenge:${challenge}`);
-  if (!expectedChallenge) {
-    return c.json({ error: 'Challenge expired or not found' }, 400);
-  }
-
-  const passkey = await getPasskeyById(c.env.DB, response.id);
-  if (!passkey) {
-    return c.json({ error: 'Credential not registered' }, 400);
-  }
-  const expectedRPID = 'undefined' != typeof c.env.RP_ID && c.env.RP_ID ? c.env.RP_ID : url.hostname;
-  const expectedOrigin = 'undefined' != typeof c.env.ORIGIN && c.env.ORIGIN ? c.env.ORIGIN : url.origin;
-
-  let verification;
-  try {
-    verification = await verifyAuthenticationResponse({
-      response,
-      expectedChallenge: challenge,
-      expectedOrigin,
-      expectedRPID,
-      authenticator: {
-        credentialID: passkey.id,
-        credentialPublicKey: new Uint8Array(passkey.pubkey_blob),
-        counter: passkey.sign_counter,
-      },
-      requireUserVerification: false,
-    });
-  } catch (error) {
-    console.error(error);
-    await c.env.KV_SESSIONS.delete(`challenge:${challenge}`);
-  }
-
-  if (verification && verification.verified) {
-    const { authenticationInfo } = verification;
-    // Update the signature counter to prevent replay attacks
-    await c.env.DB.prepare('UPDATE Passkeys SET sign_counter = ? WHERE id = ?')
-      .bind(authenticationInfo.newCounter, passkey.id).run();
-
-    // Clean up the challenge from KV
-    await c.env.KV_SESSIONS.delete(`challenge:${challenge}`);
-
-    // Create a new session
-    const sessionToken = crypto.randomUUID();
-    await c.env.KV_SESSIONS.put(`session:${sessionToken}`, passkey.user_id, { expirationTtl: 86400 }); // 1 day
-
-    return c.json({ verified: true, token: sessionToken });
-  }
-
-  return c.json({ verified: false }, 400);
 });
 
 export default app;
