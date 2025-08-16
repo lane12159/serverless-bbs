@@ -51,7 +51,7 @@ app.post('/login/simple', zValidator('json', registerChallengeSchema), async (c)
   const { RP_NAME } = c.env;
   const user = await getUserVerify(c.env.DB, username, password);
   if (!user) {
-    return c.json({ error: `User not exists` }, 400);
+    return c.json({ error: `Login Failed` }, 400);
   }
 
   const url = new URL(c.req.url);
